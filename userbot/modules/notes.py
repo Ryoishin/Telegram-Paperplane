@@ -25,10 +25,7 @@ async def notes_active(event):
     for note in notes:
         if message == "`There are no saved notes in this chat.`":
             message = "Notes saved in this chat:\n"
-            message += "🔹 **{}**\n".format(note["name"])
-        else:
-            message += "🔹 **{}**\n".format(note["name"])
-
+        message += "🔹 **{}**\n".format(note["name"])
     await event.edit(message)
 
 

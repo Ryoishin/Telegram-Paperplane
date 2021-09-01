@@ -123,8 +123,7 @@ async def fetch_weather(weather):
         return temp[0]
 
     def sun(unix):
-        suntime = datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
-        return suntime
+        return datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
 
     await weather.edit(
         f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"

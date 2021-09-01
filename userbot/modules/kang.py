@@ -72,11 +72,7 @@ async def kang(event):
 
     # The user didn't specify an emoji...
     if not emoji:
-        if message.file.emoji:  # ...but the sticker has one
-            emoji = message.file.emoji
-        else:  # ...and the sticker doesn't have one either
-            emoji = "🤔"
-
+        emoji = message.file.emoji or "🤔"
     packname = f"a{user.id}_by_{pack_username}_{number}{'_anim' if is_anim else ''}"
     packtitle = (
         f"@{user.username or user.first_name}'s Paperplane Pack "
@@ -419,7 +415,6 @@ async def newpack(is_anim, sticker, emoji, packtitle, packname):
 async def resize_photo(photo):
     """Resize the given photo to 512x512"""
     image = Image.open(photo)
-    maxsize = (512, 512)
     if (image.width and image.height) < 512:
         size1 = image.width
         size2 = image.height
@@ -436,6 +431,7 @@ async def resize_photo(photo):
         sizenew = (size1new, size2new)
         image = image.resize(sizenew)
     else:
+        maxsize = (512, 512)
         image.thumbnail(maxsize)
 
     return image

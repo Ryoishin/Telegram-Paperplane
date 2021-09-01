@@ -100,7 +100,7 @@ async def listexclude_grp(excl):
             f"`Here is the list of the excluded chats in Paperplane Exclude:`\n\n{resp}"
         )
     else:
-        resp = f"`There are no excluded chats in Paperplane Exclude.`"
+        resp = '`There are no excluded chats in Paperplane Exclude.`'
 
     await excl.edit(resp)
     return

@@ -52,8 +52,7 @@ async def download_from_url(url: str, file_name: str) -> str:
     end = datetime.now()
     duration = (end - start).seconds
     os.rename(downloader.file_name, file_name)
-    status = f"Downloaded `{file_name}` in {duration} seconds."
-    return status
+    return f"Downloaded `{file_name}` in {duration} seconds."
 
 
 async def download_from_tg(target_file) -> (str, BytesIO):
@@ -286,14 +285,10 @@ async def uploadir(udir_event):
                     thumb_image = os.path.join(input_str, "thumb.jpg")
                     metadata = extractMetadata(createParser(single_file))
                     duration = 0
-                    width = 0
-                    height = 0
                     if metadata.has("duration"):
                         duration = metadata.get("duration").seconds
-                    if metadata.has("width"):
-                        width = metadata.get("width")
-                    if metadata.has("height"):
-                        height = metadata.get("height")
+                    width = metadata.get("width") if metadata.has("width") else 0
+                    height = metadata.get("height") if metadata.has("height") else 0
                     await udir_event.client.send_file(
                         udir_event.chat_id,
                         single_file,
@@ -314,7 +309,7 @@ async def uploadir(udir_event):
                         progress_callback=progress,
                     )
                 os.remove(single_file)
-                uploaded = uploaded + 1
+                uploaded += 1
         end = datetime.now()
         duration = (end - start).seconds
         await udir_event.edit(
@@ -419,12 +414,12 @@ async def uploadas(uas_event):
     supports_streaming = False
     round_message = False
     spam_big_messages = False
-    if type_of_upload == "stream":
-        supports_streaming = True
-    if type_of_upload == "vn":
-        round_message = True
     if type_of_upload == "all":
         spam_big_messages = True
+    elif type_of_upload == "stream":
+        supports_streaming = True
+    elif type_of_upload == "vn":
+        round_message = True
     input_str = uas_event.pattern_match.group(2)
     thumb = None
     file_name = None
@@ -439,15 +434,9 @@ async def uploadas(uas_event):
     if os.path.exists(file_name):
         start = datetime.now()
         metadata = extractMetadata(createParser(file_name))
-        duration = 0
-        width = 0
-        height = 0
-        if metadata.has("duration"):
-            duration = metadata.get("duration").seconds
-        if metadata.has("width"):
-            width = metadata.get("width")
-        if metadata.has("height"):
-            height = metadata.get("height")
+        duration = metadata.get("duration").seconds if metadata.has("duration") else 0
+        width = metadata.get("width") if metadata.has("width") else 0
+        height = metadata.get("height") if metadata.has("height") else 0
         try:
             if supports_streaming:
                 await uas_event.client.send_file(
