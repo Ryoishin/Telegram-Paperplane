@@ -255,10 +255,10 @@ async def rmlistitems(event):
         )
         return
 
-    msg = "`Item(s) {} removed from the list successfully. \
+    if await add_list(event.chat_id, listname, _list["items"]) is False:
+        msg = "`Item(s) {} removed from the list successfully. \
 Use` ${} `to get the list.`"
 
-    if await add_list(event.chat_id, listname, _list["items"]) is False:
         await event.edit(msg.format(unwanted_indexes, listname))
     else:
         await event.edit(f"List {listname} doesn't exist!")
@@ -267,7 +267,7 @@ Use` ${} `to get the list.`"
         listat = "global storage" if _list["chat_id"] else str(event.chat_id)
         await event.client.send_message(
             BOTLOG_CHATID,
-            f"Removed item(s) {str(unwanted_indexes)} from {listname} in {listat}",
+            f'Removed item(s) {unwanted_indexes} from {listname} in {listat}',
         )
 
 
@@ -332,11 +332,7 @@ async def lists_logic(event):
             _list = await get_list(event.chat_id, listname)
             if _list:
                 storage = "None"
-                if _list["chat_id"] == 0:
-                    storage = "global"
-                else:
-                    storage = str(_list["chat_id"])
-
+                storage = "global" if _list["chat_id"] == 0 else str(_list["chat_id"])
                 return_str = LIST_HEADER.format(listname, storage)
 
                 if _list["items"]:
@@ -356,41 +352,38 @@ async def lists_logic(event):
 @grp_exclude()
 async def getlist_logic(event):
     """For .getlist, get the list by the name."""
-    if not (await event.get_sender()).bot:
-        if not is_mongo_alive() or not is_redis_alive():
-            return
+    if (await event.get_sender()).bot:
+        return
+    if not is_mongo_alive() or not is_redis_alive():
+        return
 
-        textx = await event.get_reply_message()
-        listname = None
+    textx = await event.get_reply_message()
+    listname = None
 
-        if textx:
-            x = re.search(r"\[Paperplane-List] List \*\*(\w*)", textx.text)
-            listname = x.group(1)
-        elif event.pattern_match.group(1):
-            listname = event.pattern_match.group(1)
+    if textx:
+        x = re.search(r"\[Paperplane-List] List \*\*(\w*)", textx.text)
+        listname = x.group(1)
+    elif event.pattern_match.group(1):
+        listname = event.pattern_match.group(1)
+    else:
+        await event.edit(f"`Pass a list to get!` {CHK_HELP}")
+        return
+
+    _list = await get_list(event.chat_id, listname)
+    if _list:
+        storage = "None"
+        storage = "global" if _list["chat_id"] == 0 else str(_list["chat_id"])
+        return_str = LIST_HEADER.format(listname, storage)
+
+        if _list["items"]:
+            for i, item in enumerate(_list["items"]):
+                return_str += f"{i+1}. {item}\n"
         else:
-            await event.edit(f"`Pass a list to get!` {CHK_HELP}")
-            return
+            return_str = "`This list is empty!`"
 
-        _list = await get_list(event.chat_id, listname)
-        if _list:
-            storage = "None"
-            if _list["chat_id"] == 0:
-                storage = "global"
-            else:
-                storage = str(_list["chat_id"])
-
-            return_str = LIST_HEADER.format(listname, storage)
-
-            if _list["items"]:
-                for i, item in enumerate(_list["items"]):
-                    return_str += f"{i+1}. {item}\n"
-            else:
-                return_str = "`This list is empty!`"
-
-            await event.edit(return_str)
-        else:
-            await event.edit(f"`List {listname} not found!`")
+        await event.edit(return_str)
+    else:
+        await event.edit(f"`List {listname} not found!`")
 
 
 CMD_HELP.update(
