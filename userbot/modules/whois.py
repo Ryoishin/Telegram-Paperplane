@@ -115,7 +115,7 @@ async def fetch_info(replied_user, event):
     caption += f"ID: <code>{user_id}</code> \n \n"
     caption += f"Bio: \n<code>{user_bio}</code> \n \n"
     caption += f"Common Chats with this user: {common_chat} \n"
-    caption += f"Permanent Link To Profile: "
+    caption += 'Permanent Link To Profile: '
     caption += f'<a href="tg://user?id={user_id}">{first_name}</a>'
 
     return caption
@@ -123,9 +123,7 @@ async def fetch_info(replied_user, event):
 
 def todict(obj, classkey=None):
     if isinstance(obj, dict):
-        data = {}
-        for (k, v) in obj.items():
-            data[k] = todict(v, classkey)
+        data = {k: todict(v, classkey) for (k, v) in obj.items()}
         return data
     elif hasattr(obj, "_ast"):
         return todict(obj._ast())

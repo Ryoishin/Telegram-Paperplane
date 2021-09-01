@@ -370,10 +370,7 @@ async def copypasta(cp_e):
         elif owo.lower() == b_char:
             reply_text += "🅱️"
         else:
-            if bool(random.getrandbits(1)):
-                reply_text += owo.upper()
-            else:
-                reply_text += owo.lower()
+            reply_text += owo.upper() if bool(random.getrandbits(1)) else owo.lower()
     reply_text += random.choice(EMOJIS)
     await cp_e.edit(reply_text)
 
@@ -446,7 +443,7 @@ async def zal(zgfy):
             reply_text.append(charac)
             continue
 
-        for _ in range(0, 3):
+        for _ in range(3):
             randint = random.randint(0, 2)
 
             if randint == 0:

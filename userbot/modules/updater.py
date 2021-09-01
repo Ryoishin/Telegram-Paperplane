@@ -19,13 +19,11 @@ from userbot.events import register, grp_exclude
 
 
 async def gen_chlog(repo, diff):
-    ch_log = ""
     d_form = "%d/%m/%y"
-    for c in repo.iter_commits(diff):
-        ch_log += (
-            f"•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n"
-        )
-    return ch_log
+    return "".join(
+        f"•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n"
+        for c in repo.iter_commits(diff)
+    )
 
 
 async def is_off_br(br):
